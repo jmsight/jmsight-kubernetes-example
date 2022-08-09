@@ -1,0 +1,11 @@
+kind: Kustomization
+namespace: jmsight-example
+secretGenerator:
+  - name: mysql-pass
+    literals:
+      - password=YOUR_PASSWORD
+resources:
+  - namespace.yaml
+  - ingress.yaml
+  - mysql-deployment.yaml
+  - wordpress-deployment.yaml

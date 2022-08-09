@@ -1,0 +1,5 @@
+kind: Kustomization
+patchesStrategicMerge:
+#- set-patch.yaml
+bases:
+  - ../base
