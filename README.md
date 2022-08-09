@@ -4,4 +4,4 @@ Examples to test [JMSIGHT's em8g](https://www.em8g.com) that is a Monitoring Saa
 ## Directory contents
 ### wordpress
 Example of deploying to the Cloud Native of various cloud(ncloud, aws, etc.) based on [Example: Deploying WordPress and MySQL with Persistent Volumes](https://kubernetes.io/docs/tutorials/stateful-application/mysql-wordpress-persistent-volume/)
-- [JMSIGHT WordPress Example](https://www.jmsight.com/landing/document/example)
+- [JMSIGHT WordPress Example](https://em8g.com/landing/documents/example)
