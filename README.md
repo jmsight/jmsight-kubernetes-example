@@ -1,6 +1,5 @@
-# Example: Deploying Application On Cloud Native (Kubernetes)
-Examples to test [JMSIGHT](https://www.jmsight.com) that is a Artificial Intelligence for IT Operations (AIOps) Soft As A Service (SaaS)
-
+# Example: Deploying Application On Cloud Native with Kubernetes
+Examples to test [JMSIGHT's em8g](https://www.em8g.com) that is a Monitoring SaaS for IT Service with Kubernetes.
 ---
 ## Directory contents
 ### wordpress
