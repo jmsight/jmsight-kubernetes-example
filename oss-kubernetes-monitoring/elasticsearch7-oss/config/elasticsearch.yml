@@ -1,0 +1,7 @@
+cluster.name: es-cluster
+node.name: ${NODE_NAME}
+bootstrap.memory_lock: false
+network.host: _site_,_lo_
+discovery.type: single-node
+http.cors.enabled: true
+http.cors.allow-origin: "*"

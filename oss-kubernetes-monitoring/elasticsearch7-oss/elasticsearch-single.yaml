@@ -1,0 +1,111 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: elasticsearch-single
+  labels:
+    component: elasticsearch
+spec:
+  serviceName: elasticsearch
+  replicas: 1
+  selector:
+    matchLabels:
+      component: elasticsearch
+  template:
+    metadata:
+      labels:
+        component: elasticsearch
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: role
+                      operator: In
+                      values:
+                        - data
+                topologyKey: kubernetes.io/hostname
+      initContainers:
+        - name: init-sysctl
+          image: busybox
+          securityContext:
+            privileged: true
+          command: [ "sysctl", "-w", "vm.max_map_count=262144" ]
+        - name: increase-fd-ulimit
+          image: busybox
+          securityContext:
+            privileged: true
+          command: [ "sh", "-c", "ulimit -l unlimited" ]
+        - name: set-es-data-dir-owner
+          image: busybox
+          securityContext:
+            privileged: true
+          command: [ "sh", "-c", "chown -R 1000:1000 /usr/share/elasticsearch/data" ]
+          volumeMounts:
+            - mountPath: /usr/share/elasticsearch/data
+              name: es-data
+      containers:
+        - name: elasticsearch
+          image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.2
+          env:
+            - name: NODE_NAME
+              value: elasticsearch
+            - name: ES_JAVA_OPTS
+              value: -Dlog4j2.formatMsgNoLookups=true -Xms1g -Xmx1g
+            - name: PROCESSORS
+              valueFrom:
+                resourceFieldRef:
+                  resource: limits.cpu
+          resources:
+            limits:
+              cpu: "0.5"
+              memory: 2Gi
+          ports:
+            - containerPort: 9200
+              name: es-http
+            - containerPort: 9300
+              name: es-transport
+          readinessProbe:
+            httpGet:
+              scheme: HTTP
+              path: /_cluster/health?local=true
+              port: 9200
+            initialDelaySeconds: 60
+          volumeMounts:
+            - mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
+              subPath: elasticsearch.yml
+              name: elasticsearch-config
+            - mountPath: /usr/share/elasticsearch/data
+              name: es-data
+      volumes:
+        - name: elasticsearch-config
+          configMap:
+            name: elasticsearch-config
+  volumeClaimTemplates:
+    - metadata:
+        name: es-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: local-storage
+        resources:
+          requests:
+            storage: 10Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: es-data
+  labels:
+    type: local
+spec:
+  storageClassName: local-storage
+  capacity:
+    storage: 10Gi
+  persistentVolumeReclaimPolicy: Delete
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/es-data"

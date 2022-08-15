@@ -1,0 +1,27 @@
+metricbeat.autodiscover:
+  providers:
+    - type: kubernetes
+      scope: cluster
+      node: ${NODE_NAME}
+      unique: true
+      templates:
+        - config:
+          - module: kubernetes
+            metricsets:
+              - event
+metricbeat.modules:
+  - module: system
+    period: 1m
+    metricsets: [ "cpu", "memory" ]
+    cpu.metrics: [ "normalized_percentages" ]
+  - module: kubernetes
+    period: 1m
+    metricsets:
+      - node
+      - pod
+    host: ${NODE_NAME}
+    hosts: [ "https://${NODE_NAME}:10250" ]
+    bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+    ssl.verification_mode: "none"
+output.elasticsearch:
+  hosts: [ '${ELASTICSEARCH_HOST:elasticsearch}:${ELASTICSEARCH_PORT:9200}' ]

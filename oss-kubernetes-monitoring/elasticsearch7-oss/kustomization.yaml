@@ -1,0 +1,10 @@
+configMapGenerator:
+  - name: elasticsearch-config
+    files:
+      - config/elasticsearch.yml
+generatorOptions:
+  disableNameSuffixHash: true
+namespace: oss-kubernetes-monitoring
+resources:
+  - elasticsearch-single.yaml
+  - elasticsearch-single-service.yaml

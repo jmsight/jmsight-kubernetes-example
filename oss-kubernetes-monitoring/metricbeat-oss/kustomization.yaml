@@ -1,0 +1,9 @@
+configMapGenerator:
+  - name: metricbeat-config
+    files:
+      - config/metricbeat.yml
+generatorOptions:
+  disableNameSuffixHash: true
+namespace: oss-kubernetes-monitoring
+resources:
+  - metricbeat-kubernetes.yaml
